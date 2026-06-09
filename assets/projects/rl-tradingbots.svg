@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="70%"><stop stop-color="#18234a"/><stop offset=".6" stop-color="#0e1327"/><stop offset="1" stop-color="#070912"/></radialGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#57e6c4"/><stop offset="1" stop-color="#ffb86b"/></linearGradient>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <g opacity=".22" stroke="#fff">
+    <path d="M150 180h900M150 300h900M150 420h900M150 540h900M150 660h900"/>
+    <path d="M220 120v620M380 120v620M540 120v620M700 120v620M860 120v620M1020 120v620"/>
+  </g>
+  <path d="M170 650c120-210 210-230 315-115s170 110 250-15 160-230 305-60" fill="none" stroke="url(#g)" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="300" cy="500" r="38" fill="#57e6c4"/>
+  <circle cx="555" cy="555" r="38" fill="#8a7cff"/>
+  <circle cx="810" cy="410" r="38" fill="#ffb86b"/>
+  <text x="130" y="200" font-family="Inter, Arial" font-size="64" font-weight="900" fill="#f4f7fb">RL Tradingbots</text>
+  <text x="130" y="260" font-family="Inter, Arial" font-size="27" fill="#aab4c6">NEAT · PPO · Backtesting · Risk</text>
+</svg>

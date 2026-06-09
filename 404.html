@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="404 - Seite nicht gefunden. Fabian Rainer Portfolio." />
+    <title>404 | Fabian Rainer</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+    <script defer src="assets/js/main.js"></script>
+  </head>
+  <body class="error-page-body">
+    <a class="skip-link" href="#main">Zum Inhalt springen</a>
+    <header class="site-header" data-header>
+      <nav class="nav shell" aria-label="Hauptnavigation">
+        <a class="brand" href="index.html"><span class="brand-mark">FR</span><span class="brand-text">Fabian Rainer</span></a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu" data-nav-toggle>Menü</button>
+        <div class="nav-menu" id="nav-menu" data-nav-menu>
+          <a href="index.html">Home</a>
+          <a href="adventures.html">Abenteuer</a>
+          <a href="projects.html">Projekte</a>
+          <a href="resume.html">Lebenslauf</a>
+          <a class="nav-pill" href="https://de.linkedin.com/in/fabian-rainer-35426a213" target="_blank" rel="noreferrer">LinkedIn</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main" class="shell section error-game-layout">
+      <section class="error-copy reveal is-visible">
+        <p class="eyebrow">404 · Route blockiert</p>
+        <h1>Diese Seite ist vom Kurs abgekommen.</h1>
+        <p>
+          Weiche den Hindernissen aus und sammle Punkte. Danach kommst du mit einem Klick zurück zur Startseite.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="index.html">Zurück zur Startseite</a>
+          <button class="button secondary" type="button" data-game-restart>Spiel neu starten</button>
+        </div>
+        <p class="game-help">Steuerung: ← / →, A / D oder die Buttons unter dem Spielfeld.</p>
+      </section>
+
+      <section class="game-card reveal is-visible" aria-label="Fahrrad-Minispiel">
+        <div class="game-hud">
+          <span>Score: <strong data-game-score>0</strong></span>
+          <span>Best: <strong data-game-best>0</strong></span>
+        </div>
+        <canvas id="bikeGame" width="520" height="680" aria-label="Fahrradfahrer weicht Hindernissen auf drei Bahnen aus"></canvas>
+        <div class="game-touch-controls" aria-label="Spielsteuerung">
+          <button type="button" data-game-left aria-label="Nach links wechseln">←</button>
+          <button type="button" data-game-right aria-label="Nach rechts wechseln">→</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer shell">
+      <p>© <span data-year></span> Fabian Rainer. Built for GitHub Pages.</p>
+      <a href="https://github.com/FabianRainer9" target="_blank" rel="noreferrer">github.com/FabianRainer9</a>
+    </footer>
+
+    <script>
+      (() => {
+        const canvas = document.getElementById('bikeGame');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const scoreEl = document.querySelector('[data-game-score]');
+        const bestEl = document.querySelector('[data-game-best]');
+        const restartButtons = document.querySelectorAll('[data-game-restart]');
+        const leftButtons = document.querySelectorAll('[data-game-left]');
+        const rightButtons = document.querySelectorAll('[data-game-right]');
+
+        const lanes = [canvas.width * 0.23, canvas.width * 0.5, canvas.width * 0.77];
+        let lane = 1;
+        let targetLane = 1;
+        let playerX = lanes[lane];
+        let obstacles = [];
+        let lastSpawn = 0;
+        let lastTime = 0;
+        let score = 0;
+        let best = Number(localStorage.getItem('fabianBikeBest') || 0);
+        let speed = 250;
+        let gameOver = false;
+        let animationId = null;
+
+        function resizeForDisplay() {
+          const rect = canvas.getBoundingClientRect();
+          const ratio = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+          const width = Math.round(rect.width * ratio);
+          const height = Math.round(rect.height * ratio);
+          if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width;
+            canvas.height = height;
+          }
+        }
+
+        function laneX(index) {
+          return canvas.width * [0.23, 0.5, 0.77][index];
+        }
+
+        function resetGame() {
+          resizeForDisplay();
+          lane = 1;
+          targetLane = 1;
+          playerX = laneX(lane);
+          obstacles = [];
+          lastSpawn = 0;
+          lastTime = 0;
+          score = 0;
+          speed = canvas.height * 0.38;
+          gameOver = false;
+          updateHud();
+          cancelAnimationFrame(animationId);
+          animationId = requestAnimationFrame(loop);
+        }
+
+        function updateHud() {
+          if (scoreEl) scoreEl.textContent = Math.floor(score).toString();
+          if (bestEl) bestEl.textContent = Math.floor(best).toString();
+        }
+
+        function move(direction) {
+          if (gameOver) {
+            resetGame();
+            return;
+          }
+          targetLane = Math.max(0, Math.min(2, targetLane + direction));
+        }
+
+        function spawnObstacle() {
+          const blockedLane = Math.floor(Math.random() * 3);
+          const type = Math.random() > 0.55 ? 'rock' : 'barrier';
+          obstacles.push({ lane: blockedLane, x: laneX(blockedLane), y: -70, w: canvas.width * 0.16, h: canvas.height * 0.075, type });
+        }
+
+        function drawRoad() {
+          const w = canvas.width;
+          const h = canvas.height;
+
+          const background = ctx.createLinearGradient(0, 0, 0, h);
+          background.addColorStop(0, '#0f172a');
+          background.addColorStop(1, '#10201c');
+          ctx.fillStyle = background;
+          ctx.fillRect(0, 0, w, h);
+
+          const road = ctx.createLinearGradient(0, 0, 0, h);
+          road.addColorStop(0, '#5f6f86');
+          road.addColorStop(0.5, '#46576f');
+          road.addColorStop(1, '#334155');
+          ctx.fillStyle = road;
+          roundRect(w * 0.1, -h * 0.02, w * 0.8, h * 1.04, w * 0.035);
+          ctx.fill();
+
+          ctx.fillStyle = 'rgba(255,255,255,0.11)';
+          ctx.fillRect(w * 0.1, 0, w * 0.8, h);
+
+          ctx.strokeStyle = 'rgba(255,255,255,0.82)';
+          ctx.lineWidth = Math.max(3, w * 0.009);
+          ctx.setLineDash([h * 0.052, h * 0.035]);
+          ctx.beginPath();
+          ctx.moveTo(w * 0.365, 0);
+          ctx.lineTo(w * 0.365, h);
+          ctx.moveTo(w * 0.635, 0);
+          ctx.lineTo(w * 0.635, h);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.strokeStyle = 'rgba(125, 249, 255, 0.9)';
+          ctx.lineWidth = Math.max(4, w * 0.012);
+          ctx.shadowColor = 'rgba(125, 249, 255, 0.28)';
+          ctx.shadowBlur = w * 0.018;
+          ctx.beginPath();
+          ctx.moveTo(w * 0.105, 0);
+          ctx.lineTo(w * 0.105, h);
+          ctx.moveTo(w * 0.895, 0);
+          ctx.lineTo(w * 0.895, h);
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+        }
+
+        function roundRect(x, y, width, height, radius) {
+          ctx.beginPath();
+          ctx.moveTo(x + radius, y);
+          ctx.lineTo(x + width - radius, y);
+          ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+          ctx.lineTo(x + width, y + height - radius);
+          ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+          ctx.lineTo(x + radius, y + height);
+          ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+          ctx.lineTo(x, y + radius);
+          ctx.quadraticCurveTo(x, y, x + radius, y);
+          ctx.closePath();
+        }
+
+        function drawPlayer() {
+          const y = canvas.height * 0.82;
+          const r = canvas.width * 0.04;
+          const body = canvas.width * 0.12;
+
+          ctx.save();
+          ctx.translate(playerX, y);
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.shadowColor = 'rgba(34, 211, 238, 0.85)';
+          ctx.shadowBlur = canvas.width * 0.045;
+
+          // Sichtbare, gezeichnete Fahrrad-Silhouette statt Emoji: stabiler Kontrast auf allen Geräten.
+          ctx.strokeStyle = '#07111f';
+          ctx.lineWidth = Math.max(4, canvas.width * 0.012);
+          ctx.beginPath();
+          ctx.arc(-body * 0.42, body * 0.25, r, 0, Math.PI * 2);
+          ctx.arc(body * 0.42, body * 0.25, r, 0, Math.PI * 2);
+          ctx.moveTo(-body * 0.42, body * 0.25);
+          ctx.lineTo(-body * 0.08, -body * 0.08);
+          ctx.lineTo(body * 0.18, body * 0.25);
+          ctx.lineTo(-body * 0.42, body * 0.25);
+          ctx.moveTo(-body * 0.08, -body * 0.08);
+          ctx.lineTo(body * 0.42, body * 0.25);
+          ctx.moveTo(body * 0.18, body * 0.25);
+          ctx.lineTo(body * 0.42, -body * 0.05);
+          ctx.stroke();
+
+          ctx.strokeStyle = '#67e8f9';
+          ctx.lineWidth = Math.max(3, canvas.width * 0.008);
+          ctx.beginPath();
+          ctx.arc(-body * 0.42, body * 0.25, r, 0, Math.PI * 2);
+          ctx.arc(body * 0.42, body * 0.25, r, 0, Math.PI * 2);
+          ctx.moveTo(-body * 0.42, body * 0.25);
+          ctx.lineTo(-body * 0.08, -body * 0.08);
+          ctx.lineTo(body * 0.18, body * 0.25);
+          ctx.lineTo(-body * 0.42, body * 0.25);
+          ctx.moveTo(-body * 0.08, -body * 0.08);
+          ctx.lineTo(body * 0.42, body * 0.25);
+          ctx.moveTo(body * 0.18, body * 0.25);
+          ctx.lineTo(body * 0.42, -body * 0.05);
+          ctx.stroke();
+
+          ctx.fillStyle = '#facc15';
+          ctx.strokeStyle = '#07111f';
+          ctx.lineWidth = Math.max(2, canvas.width * 0.005);
+          ctx.beginPath();
+          ctx.arc(-body * 0.02, -body * 0.36, body * 0.17, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.strokeStyle = '#facc15';
+          ctx.lineWidth = Math.max(6, canvas.width * 0.014);
+          ctx.beginPath();
+          ctx.moveTo(-body * 0.02, -body * 0.18);
+          ctx.lineTo(-body * 0.08, -body * 0.08);
+          ctx.lineTo(-body * 0.3, body * 0.12);
+          ctx.moveTo(-body * 0.08, -body * 0.08);
+          ctx.lineTo(body * 0.15, body * 0.02);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        function drawObstacles() {
+          obstacles.forEach((obstacle) => {
+            const w = obstacle.w;
+            const h = obstacle.h;
+            const x = obstacle.x - w / 2;
+            const y = obstacle.y - h / 2;
+
+            ctx.save();
+            ctx.shadowColor = 'rgba(251, 146, 60, 0.85)';
+            ctx.shadowBlur = canvas.width * 0.035;
+            ctx.lineWidth = Math.max(3, canvas.width * 0.008);
+            ctx.strokeStyle = '#111827';
+
+            if (obstacle.type === 'rock') {
+              ctx.fillStyle = '#fde047';
+              ctx.beginPath();
+              ctx.moveTo(obstacle.x, y - h * 0.2);
+              ctx.lineTo(x + w * 0.92, y + h * 0.55);
+              ctx.lineTo(x + w * 0.7, y + h * 0.95);
+              ctx.lineTo(x + w * 0.18, y + h * 0.85);
+              ctx.lineTo(x + w * 0.05, y + h * 0.35);
+              ctx.closePath();
+              ctx.fill();
+              ctx.stroke();
+            } else {
+              ctx.fillStyle = '#fb923c';
+              roundRect(x, y, w, h, w * 0.12);
+              ctx.fill();
+              ctx.stroke();
+
+              ctx.strokeStyle = '#fff7ed';
+              ctx.lineWidth = Math.max(4, canvas.width * 0.01);
+              ctx.beginPath();
+              ctx.moveTo(x + w * 0.18, y + h * 0.28);
+              ctx.lineTo(x + w * 0.82, y + h * 0.72);
+              ctx.moveTo(x + w * 0.18, y + h * 0.72);
+              ctx.lineTo(x + w * 0.82, y + h * 0.28);
+              ctx.stroke();
+            }
+            ctx.restore();
+          });
+        }
+
+        function collide(obstacle) {
+          const playerY = canvas.height * 0.82;
+          const dx = Math.abs(obstacle.x - playerX);
+          const dy = Math.abs(obstacle.y - playerY);
+          return dx < canvas.width * 0.095 && dy < canvas.height * 0.07;
+        }
+
+        function drawGameOver() {
+          ctx.fillStyle = 'rgba(7, 9, 18, 0.72)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = '#f4f7fb';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = `800 ${canvas.width * 0.07}px Inter, system-ui`;
+          ctx.fillText('Crash avoided? Leider nein.', canvas.width / 2, canvas.height * 0.44);
+          ctx.font = `700 ${canvas.width * 0.04}px Inter, system-ui`;
+          ctx.fillStyle = 'rgba(244,247,251,0.78)';
+          ctx.fillText('Klicke Neustart oder drücke eine Richtung.', canvas.width / 2, canvas.height * 0.52);
+        }
+
+        function loop(now) {
+          resizeForDisplay();
+          if (!lastTime) lastTime = now;
+          const dt = Math.min(0.032, (now - lastTime) / 1000);
+          lastTime = now;
+
+          drawRoad();
+
+          const targetX = laneX(targetLane);
+          playerX += (targetX - playerX) * Math.min(1, dt * 16);
+          if (Math.abs(playerX - targetX) < canvas.width * 0.01) {
+            lane = targetLane;
+            playerX = targetX;
+          }
+
+          lastSpawn += dt * 1000;
+          const spawnRate = Math.max(620, 1100 - score * 3.8);
+          if (!gameOver && lastSpawn > spawnRate) {
+            spawnObstacle();
+            lastSpawn = 0;
+          }
+
+          obstacles.forEach((obstacle) => { obstacle.y += speed * dt; });
+          obstacles = obstacles.filter((obstacle) => obstacle.y < canvas.height + 90);
+
+          if (!gameOver) {
+            score += dt * 10;
+            speed += dt * 4;
+            if (obstacles.some(collide)) {
+              gameOver = true;
+              best = Math.max(best, score);
+              localStorage.setItem('fabianBikeBest', String(Math.floor(best)));
+            }
+          }
+
+          drawObstacles();
+          drawPlayer();
+          updateHud();
+
+          if (gameOver) drawGameOver();
+          animationId = requestAnimationFrame(loop);
+        }
+
+        document.addEventListener('keydown', (event) => {
+          if (['ArrowLeft', 'a', 'A'].includes(event.key)) move(-1);
+          if (['ArrowRight', 'd', 'D'].includes(event.key)) move(1);
+        });
+        leftButtons.forEach((button) => button.addEventListener('click', () => move(-1)));
+        rightButtons.forEach((button) => button.addEventListener('click', () => move(1)));
+        restartButtons.forEach((button) => button.addEventListener('click', resetGame));
+        window.addEventListener('resize', resetGame);
+
+        resetGame();
+      })();
+    </script>
+  </body>
+</html>
