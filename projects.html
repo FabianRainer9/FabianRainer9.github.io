@@ -116,9 +116,7 @@
 		  <div class="project-content">
 			<div class="tag-row" aria-label="Technologien und Themen">
 			  <span>Industrial Automation</span>
-			  <span>Kafka</span>
 			  <span>PWA</span>
-			  <span>Service Worker</span>
 			  <span>Shopfloor</span>
 			</div>
 
@@ -131,9 +129,10 @@
 			</p>
 
 			<p>
-			  Autonomous Work Organization @ Shopfloor (AWOS) zeigt, wie relevante Shopfloor-Informationen ereignisbasiert an mobile Endgeräte verteilt werden können.
-			  Über Kafka werden Prozess- und Statusmeldungen als Events bereitgestellt, während ein JavaScript Service Worker
-			  Benachrichtigungen auch dann ermöglicht, wenn die Webanwendung nicht aktiv im Vordergrund geöffnet ist.
+			  Autonomous Work Organization @Shopfloor (AWOS) ist ein React- und TypeScript-basierter PWA-Prototyp für mobiles Benachrichtigungs- und Aufgabenmanagement im industriellen Shopfloor-Umfeld. 
+			  Die Anwendung bildet eingehende Ereignisse als Aufgaben ab, ordnet sie Operator-Gruppen zu und ermöglicht das Annehmen, Ablehnen, Blockieren und Abschließen von Aufgaben. 
+			  Ein JavaScript Service Worker ist für Push-ähnliche Benachrichtigungen vorbereitet und kann Nachrichten auch außerhalb des aktiven App-Fensters verarbeiten. 
+			  Kafka ist in der Zielarchitektur als Event-Backbone vorgesehen, über den Prozess- und Statusmeldungen ereignisbasiert an eine Backend-Schicht weitergegeben werden, welche daraus operatorrelevante Benachrichtigungen erzeugt.
 			</p>
 
 			<dl class="project-facts">
@@ -149,7 +148,7 @@
 
 			  <div>
 				<dt>Stack</dt>
-				<dd>Kafka · JavaScript · Service Worker · PWA · Event-Driven Architecture</dd>
+				<dd>React · TypeScript · Fluent UI · Webpack · Service Worker · Push API · PWA · Kafka</dd>
 			  </div>
 
 			  <div>
