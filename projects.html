@@ -46,6 +46,9 @@
         <article class="project-card reveal tilt-card">
           <div class="project-media">
             <img src="assets/projects/dl_ceo.jpg" />
+			<figcaption class="project-subcaption">
+    Vorstellung der Ergebnisse der ersten Praxisphase vor dem CEO Dr. Chrisian Hartel.
+			</figcaption>
           </div>
           <div class="project-content">
             <div class="tag-row" aria-label="Technologien und Themen">
@@ -62,7 +65,7 @@
             </p>
             <dl class="project-facts">
               <div><dt>Kontext</dt><dd>Duales Studium mit direktem Bezug zu industriellen Automatisierungssystemen.</dd></div>
-              <div><dt>Beitrag</dt><dd>Analyse von Schnittstellen, Automation, Robotik, Softwareentwicklung, technische Dokumentation und Präsentation von Ergebnissen vor dem Arbeitsdirektor Dr. Christian Hartel.</dd></div>
+              <div><dt>Beitrag</dt><dd>Analyse von Schnittstellen, Automation, Robotik, Softwareentwicklung, technische Dokumentation und Präsentation von Ergebnissen bei der Eröffnung des Digitalisierungslabors.</dd></div>
               <div><dt>Schwerpunkte</dt><dd>Automation · PCS 7 · COMOS · OT-Netzwerke · Windows Registry · System Hardening</dd></div>
               <div><dt>Lerneffekt</dt><dd>Praxisnahe Automatisierung entsteht nicht nur durch technische Umsetzung, sondern durch sichere Schnittstellen, saubere Dokumentation und ein Verständnis für den späteren Betrieb.</dd></div>
             </dl>
@@ -91,6 +94,92 @@
             </dl>
           </div>
         </article>
+		<article id="awos" class="project-card reveal tilt-card">
+		  <div class="project-media project-media-video">
+			<a class="project-video-trigger" href="#awos-video-modal" aria-label="AWOS Video vergrößern">
+			  <video
+				class="project-video"
+				src="assets/projects/awos_prototyp.mp4"
+				autoplay
+				muted
+				loop
+				playsinline
+				preload="metadata">
+			  </video>
+
+			  <span class="project-media-label project-video-label">
+				Video vergrößern
+			  </span>
+			</a>
+		  </div>
+
+		  <div class="project-content">
+			<div class="tag-row" aria-label="Technologien und Themen">
+			  <span>Industrial Automation</span>
+			  <span>Kafka</span>
+			  <span>PWA</span>
+			  <span>Service Worker</span>
+			  <span>Shopfloor</span>
+			</div>
+
+			<p class="project-status">Case Study · Prototype</p>
+
+			<h2>AWOS</h2>
+
+			<p class="project-lead">
+			  Mobiles Benachrichtigungs- und Aufgabenmanagement im industriellen Umfeld.
+			</p>
+
+			<p>
+			  Autonomous Work Organization @ Shopfloor (AWOS) zeigt, wie relevante Shopfloor-Informationen ereignisbasiert an mobile Endgeräte verteilt werden können.
+			  Über Kafka werden Prozess- und Statusmeldungen als Events bereitgestellt, während ein JavaScript Service Worker
+			  Benachrichtigungen auch dann ermöglicht, wenn die Webanwendung nicht aktiv im Vordergrund geöffnet ist.
+			</p>
+
+			<dl class="project-facts">
+			  <div>
+				<dt>Problem</dt>
+				<dd>Operatoren benötigen schnelle, kontextbezogene Informationen, ohne dauerhaft stationäre Systeme oder Leitstände beobachten zu müssen.</dd>
+			  </div>
+
+			  <div>
+				<dt>Ansatz</dt>
+				<dd>Ereignisbasierte Architektur mit Kafka, mobiler Weboberfläche und Service Worker für Push-ähnliche Benachrichtigungen und schlankes Informationsmanagement.</dd>
+			  </div>
+
+			  <div>
+				<dt>Stack</dt>
+				<dd>Kafka · JavaScript · Service Worker · PWA · Event-Driven Architecture</dd>
+			  </div>
+
+			  <div>
+				<dt>Lerneffekt</dt>
+				<dd>Kafka ist nicht für die Datenhaltung ausreichend. Durch Anwendung dieses Tools können viele wichtige KPIs für Prozesszeiten ermittelt werden, die insbesondere für Reportinganwendung von Interesse sind.</dd>
+			  </div>
+			</dl>
+		  </div>
+		</article>
+
+		<div class="project-video-modal" id="awos-video-modal" role="dialog" aria-modal="true" aria-labelledby="awos-video-title">
+		  <a class="project-video-modal-backdrop" href="#awos" aria-label="Video schließen"></a>
+
+		  <div class="project-video-modal-panel">
+			<a class="project-video-modal-close" href="#awos" aria-label="Video schließen">×</a>
+
+			<p class="project-status">Prototype Video</p>
+			<h2 id="awos-video-title">AWOS – Autonomous Work Organization @ Shopfloor</h2>
+
+			<video
+			  src="assets/projects/awos_prototyp.mp4"
+			  autoplay
+			  muted
+			  loop
+			  playsinline
+			  controls
+			  preload="metadata">
+			</video>
+		  </div>
+		</div>
 		<article class="project-card reveal tilt-card">
           <div class="project-media">
             <img src="assets/projects/MCMS.jpg" alt="Visualisierung eines Finanzdaten-Dashboards für MCMS" onerror="this.onerror=null;this.src='assets/projects/mcms.svg';" />

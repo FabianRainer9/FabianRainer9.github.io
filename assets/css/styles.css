@@ -628,7 +628,7 @@ pre code {
 
 .project-card {
   display: grid;
-  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(340px, 1fr) minmax(0, 1.05fr);
   gap: 1.3rem;
   border-radius: var(--radius);
   padding: 1rem;
@@ -636,8 +636,16 @@ pre code {
 }
 
 .project-media {
+  --project-image-zoom: 1.16;
+  --project-image-position: center;
   position: relative;
   min-height: 360px;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+  isolation: isolate;
 }
 
 .project-media img {
@@ -645,12 +653,14 @@ pre code {
   height: 100%;
   min-height: 360px;
   object-fit: cover;
-  border-radius: 22px;
-  border: 1px solid var(--line);
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+  object-position: var(--project-image-position);
+  border-radius: inherit;
+  transform: scale(var(--project-image-zoom));
+  transform-origin: center;
 }
 
-.project-media-label {
+.project-media-label,
+.project-subcaption {
   position: absolute;
   left: 1rem;
   right: 1rem;
@@ -658,6 +668,7 @@ pre code {
   display: inline-flex;
   width: fit-content;
   max-width: calc(100% - 2rem);
+  margin: 0;
   border: 1px solid rgba(255,255,255,0.18);
   border-radius: 999px;
   padding: 0.45rem 0.72rem;
@@ -665,6 +676,7 @@ pre code {
   color: var(--text);
   font-size: 0.78rem;
   font-weight: 800;
+  line-height: 1.35;
   backdrop-filter: blur(14px);
 }
 
@@ -915,8 +927,21 @@ pre code {
     font-size: 0.9rem;
   }
 
+  .project-media {
+    height: clamp(240px, 72vw, 340px);
+  }
+
   .project-media img {
-    min-height: 240px;
+    min-height: 0;
+  }
+
+  .project-subcaption,
+  .project-media-label {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    font-size: 0.74rem;
   }
 
   .resume-frame,
@@ -1060,19 +1085,23 @@ pre code {
 }
 
 .project-card {
-  align-items: start;
+  align-items: stretch;
 }
 
 .project-media {
   min-height: 0;
-  height: clamp(260px, 36vw, 420px);
-  align-self: start;
+  height: clamp(320px, 38vw, 500px);
+  align-self: stretch;
 }
 
 .project-media img {
   min-height: 0;
   height: 100%;
 }
+
+/* Für einzelne Bilder bei Bedarf im HTML setzen:
+   style="--project-image-position: 45% center; --project-image-zoom: 1.24;"
+*/
 
 .error-page-body {
   min-height: 100vh;
@@ -1183,7 +1212,180 @@ pre code {
     font-size: calc(0.74rem + (var(--size) * 0.22rem));
   }
 
+  .project-media {
+    height: clamp(240px, 72vw, 340px);
+  }
+
+  .project-subcaption,
+  .project-media-label {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    font-size: 0.74rem;
+  }
+
   .error-game-layout {
     padding-top: 54px;
   }
+}
+
+/* --- AWOS project video + modal --- */
+
+.project-media-video {
+  background:
+    radial-gradient(circle at 20% 16%, rgba(87, 230, 196, 0.18), transparent 34%),
+    radial-gradient(circle at 84% 78%, rgba(138, 124, 255, 0.2), transparent 36%),
+    rgba(255,255,255,0.04);
+}
+
+.project-video-trigger {
+  position: absolute;
+  inset: 0;
+  display: block;
+  border-radius: inherit;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+.project-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+  transform: scale(var(--project-image-zoom));
+  transform-origin: center;
+}
+
+.project-video-trigger::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(to top, rgba(5, 8, 16, 0.62), transparent 46%),
+    radial-gradient(circle at 50% 50%, rgba(87, 230, 196, 0.12), transparent 38%);
+  pointer-events: none;
+}
+
+.project-video-label {
+  z-index: 2;
+}
+
+.project-video-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.project-video-modal:target {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.project-video-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 5, 12, 0.78);
+  backdrop-filter: blur(18px);
+}
+
+.project-video-modal-panel {
+  position: relative;
+  z-index: 1;
+  width: min(1080px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: linear-gradient(135deg, rgba(255,255,255,0.13), rgba(255,255,255,0.055));
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+  transform: translateY(14px) scale(0.98);
+  transition: transform 0.22s ease;
+}
+
+.project-video-modal:target .project-video-modal-panel {
+  transform: translateY(0) scale(1);
+}
+
+.project-video-modal-panel h2 {
+  margin-right: 3rem;
+  font-size: clamp(1.75rem, 4vw, 3.3rem);
+}
+
+.project-video-modal-panel video {
+  width: 100%;
+  max-height: min(72vh, 760px);
+  object-fit: contain;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #000;
+}
+
+.project-video-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255,255,255,0.24);
+  border-radius: 50%;
+  background: rgba(5, 8, 16, 0.72);
+  color: var(--text);
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+  backdrop-filter: blur(14px);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.project-video-modal-close:hover {
+  transform: scale(1.05);
+  background: rgba(255,255,255,0.12);
+}
+
+@media (max-width: 560px) {
+  .project-video-modal {
+    padding: 0.75rem;
+  }
+
+  .project-video-modal-panel {
+    width: calc(100vw - 1.5rem);
+    max-height: calc(100vh - 1.5rem);
+    border-radius: 22px;
+  }
+
+  .project-video-modal-panel h2 {
+    margin-right: 2.7rem;
+  }
+
+  .project-video-modal-close {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}
+/* Nur AWOS-Video: weniger Zoom, keine Änderung an anderen Projektbildern */
+.project-media-video {
+  --project-image-zoom: 1;
+}
+
+.project-media-video .project-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: inherit;
+  transform: scale(var(--project-image-zoom));
+  transform-origin: center;
 }
